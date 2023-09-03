@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+  <!-- พวกที่มี v ขึ้นต้นเป็น component ของ viewtify ว่ามีหน้าตาประมาณไหน-->
+  <div id="app">
+    <v-app>
+      <v-main class="blue lighten-3">
+        <!-- ทำหน้าที่คล้าย container bootstap จะช่วยจัดข้อความ-->
+        
+        <v-container>
+            <v-card>
+                <v-card-title class="blue lighten-1 white--text">{{title}}</v-card-title>
+                <v-card-text class="blue lighten-5 pa-6 text-center">
+                   <!-- v-if='state==0' บอกเงื่อนไขถ้าจริงจะปรากฎ-->
+
+                   <template>
+                    <div>
+                      <v-btn v-if="showStartButton" @click="startGame">เริ่มเล่น</v-btn>
+                      <p v-if="showCountdown">{{ countdown }}</p>
+                      <div v-if="showGameScreen">
+                        <h2>{{ n1 }} + {{ n2 }} = ?</h2>
+                    </div>
+                  
+                    <template v-if='showResult'>
+                      <h1>คุณชนะแล้ว เก่งมาก</h1><br>
+                      <template v-if!='showResult'>
+                        <h1>ตอบผิด</h1><br>
+                      </template>
+                      <v-btn @click="showStartButton">เล่นต่อไป</v-btn>
+                    <v-btn href="index.html" >เลิกเล่น</v-btn>
+                  </template>
+                    </div>
+                  </template>
+                </v-card-text>
+                <v-bottom-navigation class="blue lighten-1 white--text pa-4">{{footer}}</v-bottom-navigation>
+                
+       
+            </v-card>
+
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script>
+  new Vue({
+      el: '#app',
+       /*สร้าง object data มาเพื่อสร้างข้อมูลของ application view โดยสร้างตัวแปรมาก่อน*/
+      data:{
+        /*VueJS จะไม่มี component แต่  VuetifyJS จะช่วยตกแต่งให้สวยขึ้นโดยจะใช้ส่วน v-card*/
+        title  :"สอบสร้างเกมบวกเลขเร็ว โดยใช้ VueJs",
+        footer :"633020557-8 จิตชยา วีระโชติธาดา วิทยาการคอมพิวเตอร์",
+        showStartButton: true,
+        showCountdown: false,
+        showGameScreen: false,
+        countdown: 3,
+        countdownInterval: null,
+        n1: 0,
+      n2: 0,
+      answer: 0,
+      choices: [],
+      showQuestion: false,
+      showResult: false,
+      isCorrect: false,
+      score: 0
+      },
+      vuetify: new Vuetify(),
+      /*สร้าง object method มาเพื่อสร้างฟังชั่น*/
+      methods:{
+        startGame() {
+        this.showStartButton = false;
+        this.showCountdown = true;
+        this.countdownInterval = setInterval(() => {
+        this.countdown--;
+        if (this.countdown == -1) {
+          clearInterval(this.countdownInterval);
+          this.showCountdown = false;
+          this.showGameScreen = true;
+        }
+      }, 1000);
+      this.n1 = Math.floor(Math.random() * 20);
+      this.n2 = Math.floor(Math.random() * 20);
+      this.answer = this.n1 - this.n2;
+      this.choices = this.generateChoices();
+      this.showQuestion = true;
+      setTimeout(() => {
+        this.showQuestion = false;
+        this.showResult = true;
+      }, 5000);
+      
+    },
+    generateChoices() {
+      const choices = [this.answer];
+      while (choices.length < 4) {
+        const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
+        if (!choices.includes(randomNum)) {
+          choices.push(randomNum);
+        }
+      }
+      return choices.sort(() => Math.random() - 0.5);
+    },
+    checkAnswer(choice) {
+      if (choice === this.answer) {
+        this.isCorrect = true;
+        this.score += 1;
+      } else {
+        this.isCorrect = false;
+      }
+      this.showResult = true;
+    }
+  
+      }
+
+    })
+
+  </script>
+</body>
+</html>
